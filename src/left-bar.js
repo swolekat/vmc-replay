@@ -1,4 +1,4 @@
-import dgram from 'node:dgram';
+import dgram from 'dgram';
 import jetpack from 'fs-jetpack';
 import {directoryPath} from './paths';
 
@@ -58,7 +58,7 @@ const endCapture = () => {
     const name = newCaptureNameInput.value;
     const fileName = `${encodeURI(name)}.json`;
     const appDir = jetpack.cwd(directoryPath);
-    directoryPath.write(fileName, JSON.stringify(packets));
+    appDir.write(fileName, JSON.stringify(packets));
     startCaptureContent.style = 'display: block';
     endCaptureContent.style = 'display: none';
 };
