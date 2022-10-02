@@ -2,7 +2,6 @@ import dgram from 'dgram';
 import jetpack from 'fs-jetpack';
 import {directoryPath} from './paths';
 
-
 const startCaptureContent = document.getElementById('start-capture-content');
 const endCaptureContent = document.getElementById('end-capture-content');
 const newCaptureNameInput = document.getElementById('new-capture-name');
@@ -12,7 +11,6 @@ const startCaptureButton = document.getElementById('start-capture-button');
 const endCaptureText = document.getElementById('end-capture-text');
 const endCaptureButton = document.getElementById('end-capture-button');
 const error = document.getElementById('error');
-
 
 let socket;
 let packets = [];

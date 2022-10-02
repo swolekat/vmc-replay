@@ -4,6 +4,7 @@ import "./stylesheets/main.css";
 // import jetpack from "fs-jetpack";
 import './paths';
 import './left-bar';
+import './right-bar';
 
 // let appSettings = {
 //   settings: [],
