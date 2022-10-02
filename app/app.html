@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>VMC Replay</title>
+  </head>
+  <body>
+    <div class="body">
+      <div class="left-bar">
+        <h3>
+          New Capture
+        </h3>
+        <h1 class="error" style="display: none;" id="error">
+          ERROR: UDP FAILED RESTART APP
+        </h1>
+        <div id="start-capture-content">
+          <section>
+            <label for="new-capture-name">
+              Name
+            </label>
+            <input type="text" id="new-capture-name">
+          </section>
+
+          <section>
+            <label for="new-capture-ip">
+              Capture IP
+            </label>
+            <input type="text" id="new-capture-ip" value="127.0.0.1">
+          </section>
+
+          <section>
+            <label for="new-capture-port">
+              Capture Port
+            </label>
+            <input type="text" id="new-capture-port" value="39539">
+          </section>
+
+          <button id="start-capture-button">
+            Start New Capture
+          </button>
+        </div>
+        <div id="end-capture-content" style="display: none;">
+          <p id="end-capture-text">
+            Capturing <b>charungies</b> on <b>127.0.0.1:39539</b>
+          </p>
+          <button id="end-capture-button" >
+            End Capture
+          </button>
+        </div>
+      </div>
+      <div class="right-bar" id="settings-list">
+
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
