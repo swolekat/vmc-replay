@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/swolekat/vmc-replay#readme",
   "build": {
-    "appId": "com.example.electron-boilerplate",
+    "appId": "swolekat.vmc-replay",
     "files": [
       "app/**/*",
       "node_modules/**/*",
