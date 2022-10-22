@@ -2,6 +2,7 @@ import jetpack from 'fs-jetpack';
 import {directoryPath} from './paths';
 import dgram from 'dgram';
 import fs from 'fs';
+import { Buffer } from 'buffer';
 
 const list = document.getElementById('replay-list');
 
@@ -59,11 +60,16 @@ const processFrame = (name) => {
     }
     const {index, loop, ip, port, packets} = activeReplays[name];
     if(index > packets.length -1){
+        const startButton = document.querySelector(`.start-replay-button[data-name='${name}']`);
+        const stopButton = document.querySelector(`.stop-replay-button[data-name='${name}']`);
+        stopButton.style = 'display: none;';
+        startButton.style = 'display: block;';
         return;
     }
     const {buffer, timeToNext} = packets[index];
     const client = dgram.createSocket('udp4');
-    client.send(buffer, port, ip, (err) => {
+    const bufferObj = Buffer.from(buffer, 'base64');
+    client.send(bufferObj, port, ip, (err) => {
         client.close();
     });
     activeReplays[name].index += 1;
@@ -77,7 +83,7 @@ const startReplay = (event) => {
     const name = event.currentTarget.getAttribute('data-name');
     const replayIp = document.querySelector(`.ip-input[data-name='${name}']`).value;
     const replayPort = document.querySelector(`.port-input[data-name='${name}']`).value;
-    const loop = document.querySelector(`.loop-checkbox[data-name='${name}']`).value;
+    const loop = document.querySelector(`.loop-checkbox[data-name='${name}']`).checked;
     const fileName = `${encodeURI(name)}.json`;
     const appDir = jetpack.cwd(directoryPath);
     const fileContents = appDir.read(fileName, 'json');
@@ -89,12 +95,21 @@ const startReplay = (event) => {
         packets: fileContents,
     };
 
+    const startButton = document.querySelector(`.start-replay-button[data-name='${name}']`);
+    const stopButton = document.querySelector(`.stop-replay-button[data-name='${name}']`);
+    startButton.style = 'display: none;';
+    stopButton.style = 'display: block;';
+
     processFrame(name);
 };
 
 const stopReplay = (event) => {
     const name = event.currentTarget.getAttribute('data-name');
     delete activeReplays[name];
+    const startButton = document.querySelector(`.start-replay-button[data-name='${name}']`);
+    const stopButton = document.querySelector(`.stop-replay-button[data-name='${name}']`);
+    stopButton.style = 'display: none;';
+    startButton.style = 'display: block;';
 };
 
 const deleteReplay = (event) => {
