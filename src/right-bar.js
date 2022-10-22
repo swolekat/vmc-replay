@@ -1,7 +1,10 @@
 import jetpack from 'fs-jetpack';
 import {directoryPath} from './paths';
+import dgram from 'dgram';
 
 const list = document.getElementById('replay-list');
+
+let activeReplays = {};
 
 const renderRightBar = (encodedName) => {
     return (
@@ -35,11 +38,14 @@ const renderRightBar = (encodedName) => {
                     <label for="loop-checkbox-${encodedName}">
                       Loop
                     </label>
-                    <input type="checkbox" id="loop-checkbox-${encodedName}" data-name="${encodedName}">
+                    <input class="loop-checkbox" type="checkbox" id="loop-checkbox-${encodedName}" data-name="${encodedName}">
                   </section>
                   
                   <button class="start-replay-button" data-name="${encodedName}">
                     Start     
+                  </button>
+                 <button class="stop-replay-button" data-name="${encodedName}" style="display: none;">
+                    Stop     
                   </button>
                 </div>
             </div>
@@ -47,14 +53,54 @@ const renderRightBar = (encodedName) => {
     );
 };
 
+const processFrame = (name) => {
+    if(!activeReplays[name]){
+        return;
+    }
+    const {index, loop, ip, port, packets} = activeReplays[name];
+    if(index > packets.length -1){
+        return;
+    }
+    const {buffer, timeToNext} = packets[index];
+    const client = dgram.createSocket('udp4');
+    client.send(buffer, port, ip, (err) => {
+        client.close();
+    });
+    activeReplays[name].index += 1;
+    if(loop){
+        activeReplays[name].index = activeReplays[name].index % packets.length;
+    }
+    setTimeout(() => processFrame(name), timeToNext);
+};
+
 const startReplay = (event) => {
     const name = event.target.attribute('data-name');
     const replayIp = document.querySelector(`.ip-input[data-name='${name}']`).value;
     const replayPort = document.querySelector(`.port-input[data-name='${name}']`).value;
+    const loop = document.querySelector(`.loop-checkbox[data-name='${name}']`).value;
+    const fileName = `${encodeURI(name)}.json`;
+    const appDir = jetpack.cwd(directoryPath);
+    const fileContents = appDir.read(fileName, 'json');
+    activeReplays[name] = {
+        index: 0,
+        loop,
+        ip: replayIp,
+        port: replayPort,
+        packets: fileContents,
+    };
+
+    processFrame(name);
+};
+
+const stopReplay = (event) => {
+    const name = event.target.attribute('data-name');
+    delete activeReplays[name];
 };
 
 const deleteReplay = (event) => {
     const name = event.target.attribute('data-name');
+    const appDir = jetpack.cwd(directoryPath);
+    appDir.remove(name);
 };
 
 export const render = () => {
@@ -79,6 +125,12 @@ export const render = () => {
         for(let x = 0; x < deleteButtons.length; x++){
             const deleteButton = deleteButtons[x];
             deleteButton.addEventListener(deleteReplay);
+        }
+
+        const stopButtons = document.getElementsByClassName('stop-replay-button');
+        for(let x = 0; x < stopButtons.length; x++){
+            const stopButton = stopButtons[x];
+            stopButton.addEventListener(stopReplay);
         }
     }, 0);
 };

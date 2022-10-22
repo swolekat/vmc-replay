@@ -56,6 +56,19 @@ const endCapture = () => {
     const name = newCaptureNameInput.value;
     const fileName = `${encodeURI(name)}.json`;
     const appDir = jetpack.cwd(directoryPath);
+    const processPackets = packets.map(({buffer, time}, index) => {
+        const nextIndex = index + 1;
+        let timeToNext = 0;
+        if(nextIndex <= packets.length -1){
+            const nextPacket = packets[nextIndex];
+            timeToNext = nextPacket.time - time;
+        }
+        return {
+            buffer,
+            time,
+            timeToNext
+        }
+    })
     appDir.write(fileName, JSON.stringify(packets));
     startCaptureContent.style = 'display: block';
     endCaptureContent.style = 'display: none';
