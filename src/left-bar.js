@@ -1,6 +1,7 @@
 import dgram from 'dgram';
 import jetpack from 'fs-jetpack';
 import {directoryPath} from './paths';
+import { render } from './right-bar';
 
 const startCaptureContent = document.getElementById('start-capture-content');
 const endCaptureContent = document.getElementById('end-capture-content');
@@ -30,10 +31,17 @@ const startCapture = () => {
     let time;
     packets = [];
     socket = dgram.createSocket('udp4');
+    socket.on('listening', () => {
+        const address = socket.address();
+        console.log(`server listening ${address.address}:${address.port}`);
+    });
+
     socket.on('error', (err) => {
         console.log(`server error:\n${err.stack}`);
         socket.close();
         error.style = 'display: block;';
+        startCaptureContent.style = 'display: block';
+        endCaptureContent.style = 'display: none';
     });
 
     socket.on('message', (msg) => {
@@ -56,7 +64,7 @@ const endCapture = () => {
     const name = newCaptureNameInput.value;
     const fileName = `${encodeURI(name)}.json`;
     const appDir = jetpack.cwd(directoryPath);
-    const processPackets = packets.map(({buffer, time}, index) => {
+    const processedPackets = packets.map(({buffer, time}, index) => {
         const nextIndex = index + 1;
         let timeToNext = 0;
         if(nextIndex <= packets.length -1){
@@ -69,9 +77,10 @@ const endCapture = () => {
             timeToNext
         }
     })
-    appDir.write(fileName, JSON.stringify(packets));
+    appDir.write(fileName, JSON.stringify(processedPackets, null, 2));
     startCaptureContent.style = 'display: block';
     endCaptureContent.style = 'display: none';
+    render();
 };
 
 startCaptureButton.addEventListener('click', startCapture);

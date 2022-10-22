@@ -52,12 +52,12 @@ body {
   padding: 20px;
 }
 
-/*.setting-card {*/
-/*  margin-bottom: 20px;*/
-/*  background: #ff0000;*/
-/*  padding: 10px;*/
-/*  border-radius: 10px;*/
-/*}*/
+.replay {
+  margin-bottom: 20px;
+  background: #ff0000;
+  padding: 10px;
+  border-radius: 10px;
+}
 
 /*.name {*/
 /*  margin-bottom: 10px;*/

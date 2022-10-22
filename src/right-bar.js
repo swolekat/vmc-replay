@@ -1,6 +1,7 @@
 import jetpack from 'fs-jetpack';
 import {directoryPath} from './paths';
 import dgram from 'dgram';
+import fs from 'fs';
 
 const list = document.getElementById('replay-list');
 
@@ -10,10 +11,9 @@ const renderRightBar = (encodedName) => {
     return (
         `
             <div class="replay minimized">
-
                 <div class="replay-header">
                     <div class="replay-name">
-                        ${decodeURI(name)}
+                        ${decodeURI(encodedName)}
                     </div>
                     <button class="replay-delete" data-name="${encodedName}">
                         DELETE
@@ -24,7 +24,7 @@ const renderRightBar = (encodedName) => {
                     <label>
                       Replay IP
                     </label>
-                    <input type="text" value="127.0.0.1" class="ip-input" data-name="${encodedName}">
+                    <input type="text" value="127.0.0.1" class="ip-input" data-name="${encodedName}" disabled>
                   </section>
         
                   <section>
@@ -74,7 +74,7 @@ const processFrame = (name) => {
 };
 
 const startReplay = (event) => {
-    const name = event.target.attribute('data-name');
+    const name = event.currentTarget.getAttribute('data-name');
     const replayIp = document.querySelector(`.ip-input[data-name='${name}']`).value;
     const replayPort = document.querySelector(`.port-input[data-name='${name}']`).value;
     const loop = document.querySelector(`.loop-checkbox[data-name='${name}']`).value;
@@ -93,20 +93,27 @@ const startReplay = (event) => {
 };
 
 const stopReplay = (event) => {
-    const name = event.target.attribute('data-name');
+    const name = event.currentTarget.getAttribute('data-name');
     delete activeReplays[name];
 };
 
 const deleteReplay = (event) => {
-    const name = event.target.attribute('data-name');
+    const name = event.currentTarget.getAttribute('data-name');
     const appDir = jetpack.cwd(directoryPath);
-    appDir.remove(name);
+    appDir.remove(`${name}.json`);
+    render();
 };
 
 export const render = () => {
     list.innerHTML = '';
-    const appDir = jetpack.cwd(directoryPath);
-    const files = appDir.list();
+    let files = [];
+    try {
+        files = fs.readdirSync(directoryPath);
+    } catch {
+        setTimeout(() => {
+            render();
+        }, 0);
+    }
     let allContent = '';
     files.forEach(file => {
         console.log(file);
@@ -118,19 +125,21 @@ export const render = () => {
         const buttons = document.getElementsByClassName('start-replay-button');
         for(let x = 0; x < buttons.length; x++){
             const button = buttons[x];
-            button.addEventListener(startReplay);
+            button.addEventListener('click', startReplay);
         }
 
         const deleteButtons = document.getElementsByClassName('replay-delete');
         for(let x = 0; x < deleteButtons.length; x++){
             const deleteButton = deleteButtons[x];
-            deleteButton.addEventListener(deleteReplay);
+            deleteButton.addEventListener('click', deleteReplay);
         }
 
         const stopButtons = document.getElementsByClassName('stop-replay-button');
         for(let x = 0; x < stopButtons.length; x++){
             const stopButton = stopButtons[x];
-            stopButton.addEventListener(stopReplay);
+            stopButton.addEventListener('click', stopReplay);
         }
     }, 0);
 };
+
+render();
