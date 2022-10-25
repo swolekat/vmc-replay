@@ -4,6 +4,8 @@ const electron = require("electron");
 const webpack = require("webpack");
 const config = require("./webpack.app.config");
 
+electron.commandLine.appendSwitch('disable-renderer-backgrounding');
+
 const compiler = webpack(config({ development: true }));
 let electronStarted = false;
 

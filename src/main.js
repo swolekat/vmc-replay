@@ -61,7 +61,8 @@ app.on("ready", () => {
       nodeIntegration: true,
       contextIsolation: false,
       // Spectron needs access to remote module
-      enableRemoteModule: env.name === "test"
+      enableRemoteModule: env.name === "test",
+      backgroundThrottling: false,
     }
   });
 
