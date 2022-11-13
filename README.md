@@ -1,5 +1,5 @@
 # vmc-replay
-Record and replay vmc interaction. Can also loop them.
+Record and replay vmc interaction. Can also loop them. Watch the video [here](https://www.youtube.com/watch?v=1uD8imjUC-o)
 
 ## How to install
 
