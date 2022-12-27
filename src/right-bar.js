@@ -3,6 +3,11 @@ import {directoryPath} from './paths';
 import dgram from 'dgram';
 import fs from 'fs';
 import { Buffer } from 'buffer';
+import {ipcRenderer} from "electron";
+
+ipcRenderer.on("re-render", () => {
+    render();
+});
 
 const list = document.getElementById('replay-list');
 

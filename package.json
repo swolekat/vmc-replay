@@ -1,6 +1,6 @@
 {
   "name": "vmc-replay",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Record and replay vmc interaction",
   "main": "app/main.js",
   "repository": {
